@@ -4,6 +4,8 @@ import Pagination from "./Pagnition.jsx";
 import {useCallback} from "react";
 import MonthDropdown, {months} from "./MonthDropdown.jsx";
 import Statistics from "./Statistics.jsx";
+import convertToDateOnly from "../store/DateConvert.js";
+import BarChart from "./BarChart.jsx";
 
 const Transactions = () => {
     const [transactions, setTransactions] = useState([]);
@@ -13,6 +15,18 @@ const Transactions = () => {
     const [totalPages, setTotalPages] = useState(1);
     const [month, setMonth] = useState(3);
     const [statistics, setStatistics] = useState([]);
+    const [barChartData, setBarChartData] = useState([
+        { range: '0-100', count: 0 },
+        { range: '101-200', count: 0 },
+        { range: '201-300', count: 1 },
+        { range: '301-400', count: 0 },
+        { range: '401-500', count: 0 },
+        { range: '501-600', count: 0 },
+        { range: '601-700', count: 0 },
+        { range: '701-800', count: 2 },
+        { range: '801-900', count: 0 },
+        { range: '901-above', count: 0 }
+    ]);
 
     useEffect(() => {
         fetchTransactions();
@@ -20,13 +34,24 @@ const Transactions = () => {
 
     useLayoutEffect(() => {
         fetchMonthStatistics();
+        fetchBarChartStatistics();
     }, [month]);
 
     const fetchMonthStatistics = async () => {
         try{
             const { data } = await axios.get(`http://localhost:3001/api/statistics/${month}`);
-            setStatistics(data.statistics);
-            console.log(data.statistics);
+            await setStatistics(() => data.statistics);
+        }catch (err){
+            console.log("Error while fetching Statistics" , err);
+        }
+    }
+
+    const fetchBarChartStatistics = async () => {
+        try{
+            const { data } = await axios.get(`http://localhost:3001/api/priceRange/${month}`);
+            setTimeout(()=>{
+                setBarChartData(() => data);
+            }, 200)
         }catch (err){
             console.log("Error while fetching Statistics" , err);
         }
@@ -46,12 +71,8 @@ const Transactions = () => {
 
     const handleSearchChange = (e) => {
         setSearch(e.target.value);
-        setPage(1); // Reset to first page on new search
+        setPage(1);
     };
-
-    useEffect(() => {
-        console.log(month)
-    }, [month])
 
     const handleSetMonth = useCallback((event) => {
         setMonth(event.target.value);
@@ -73,8 +94,8 @@ const Transactions = () => {
             </div>
             <ul>
                 <table>
-                    <caption className="caption-bottom">
-                        Table 3.1: Professional wrestlers and their signature moves.
+                    <caption className="caption-bottom mt-2">
+                        Transaction Table
                     </caption>
                     <thead>
                     <tr className="border border-neutral-500">
@@ -94,8 +115,8 @@ const Transactions = () => {
                             <td className="border-r border-neutral-500 p-1">{transaction.title}</td>
                             <td className="border-r border-neutral-500 p-1">{transaction.description}</td>
                             <td className="border-r border-neutral-500 p-1">{transaction.category}</td>
-                            <td className="border-r border-neutral-500 p-1">{transaction.price}</td>
-                            <td className="border-r border-neutral-500 p-1">{transaction.price}</td>
+                            <td className="border-r border-neutral-500 p-1">{convertToDateOnly(transaction.dateOfSale)}</td>
+                            <td className="border-r border-neutral-500 p-1">{transaction.sold}</td>
                             <td className="">{transaction.price}</td>
                         </tr>
                     ))}
@@ -113,6 +134,9 @@ const Transactions = () => {
                 <h2 className="text-3xl font-bold font-mono">Statistics for {months[month]} month:</h2>
                 <Statistics statistics={statistics} month={month}/>
             </div>
+            {
+                barChartData.length >= 1 ? (<BarChart barChartData={barChartData}/>) : null
+            }
         </div>
     );
 }
