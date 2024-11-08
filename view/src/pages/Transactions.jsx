@@ -6,6 +6,7 @@ import MonthDropdown, {months} from "./MonthDropdown.jsx";
 import Statistics from "./Statistics.jsx";
 import convertToDateOnly from "../store/DateConvert.js";
 import BarChart from "./BarChart.jsx";
+import PieChart from "./PieChart.jsx";
 
 const Transactions = () => {
     const [transactions, setTransactions] = useState([]);
@@ -27,6 +28,7 @@ const Transactions = () => {
         { range: '801-900', count: 0 },
         { range: '901-above', count: 0 }
     ]);
+    const [pieChartData, setPieChartData] = useState([]);
 
     useEffect(() => {
         fetchTransactions();
@@ -37,10 +39,23 @@ const Transactions = () => {
         fetchBarChartStatistics();
     }, [month]);
 
+    useLayoutEffect(() => {
+        fetchPieChartStatistics()
+    }, [])
+
     const fetchMonthStatistics = async () => {
         try{
             const { data } = await axios.get(`http://localhost:3001/api/statistics/${month}`);
             await setStatistics(() => data.statistics);
+        }catch (err){
+            console.log("Error while fetching Statistics" , err);
+        }
+    }
+
+    const fetchPieChartStatistics = async () => {
+        try{
+            const { data } = await axios.get(`http://localhost:3001/api/pieChart`);
+            await setPieChartData(() => data);
         }catch (err){
             console.log("Error while fetching Statistics" , err);
         }
@@ -134,9 +149,19 @@ const Transactions = () => {
                 <h2 className="text-3xl font-bold font-mono">Statistics for {months[month]} month:</h2>
                 <Statistics statistics={statistics} month={month}/>
             </div>
-            {
-                barChartData.length >= 1 ? (<BarChart barChartData={barChartData}/>) : null
-            }
+            <div className="border-t border-neutral-500 m-4"></div>
+            <div>
+                {
+                    barChartData.length >= 1 ? (<BarChart barChartData={barChartData}/>) : null
+                }
+            </div>
+            <div className="border-t border-neutral-500 m-4"></div>
+            <div className="flex flex-col items-center justify-between">
+                <h2 className="text-3xl font-bold font-mono">Pie Chart for product categories</h2>
+                {
+                    pieChartData.length >= 1 ? (<PieChart pieChartData={pieChartData}/>) : null
+                }
+            </div>
         </div>
     );
 }

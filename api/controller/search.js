@@ -38,12 +38,6 @@ export const getAllTransactions = async (req, res) => {
         console.error('Error fetching transactions:', err);
         return res.status(500).json({ message: 'Internal Server Error' });
     }
-
-    // const result = await prisma.productTransaction.findMany();
-    // if (result) {
-    //     return res.status(200).json(result);
-    // }
-    // return res.status(404).json({message: "No products found..."});
 }
 
 export const getTransaction = async (req, res) => {

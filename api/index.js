@@ -8,17 +8,17 @@ app.use(cors());
 config();
 
 import searchRoute from "./routes/searchRoute.js";
-import transactionsRoute from "./routes/transactions.js";
 import prisma from './prisma/prisma.js';
 import s3seed from "./routes/s3Seed.js";
 import statistics from "./routes/statisticsRoute.js";
 import barchartRoute from "./routes/barchartRoute.js";
+import pieChartRoute from "./routes/pieChartRoute.js";
 
-app.use("/api/transfers", transactionsRoute);
 app.use("/api", s3seed);
 app.use("/api", searchRoute);
 app.use("/api", statistics);
 app.use("/api", barchartRoute);
+app.use("/api", pieChartRoute);
 
 app.get("/", (req, res)=>{
     res.send("json");
