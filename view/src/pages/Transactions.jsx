@@ -45,7 +45,7 @@ const Transactions = () => {
 
     const fetchMonthStatistics = async () => {
         try{
-            const { data } = await axios.get(`http://localhost:3001/api/statistics/${month}`);
+            const { data } = await axios.get(`https://roxiler-nqdi.onrender.com/api/statistics/${month}`);
             await setStatistics(() => data.statistics);
         }catch (err){
             console.log("Error while fetching Statistics" , err);
@@ -54,7 +54,7 @@ const Transactions = () => {
 
     const fetchPieChartStatistics = async () => {
         try{
-            const { data } = await axios.get(`http://localhost:3001/api/pieChart`);
+            const { data } = await axios.get(`https://roxiler-nqdi.onrender.com/api/pieChart`);
             await setPieChartData(() => data);
         }catch (err){
             console.log("Error while fetching Statistics" , err);
@@ -63,7 +63,7 @@ const Transactions = () => {
 
     const fetchBarChartStatistics = async () => {
         try{
-            const { data } = await axios.get(`http://localhost:3001/api/priceRange/${month}`);
+            const { data } = await axios.get(`https://roxiler-nqdi.onrender.com/api/priceRange/${month}`);
             setTimeout(()=>{
                 setBarChartData(() => data);
             }, 200)
@@ -74,7 +74,7 @@ const Transactions = () => {
 
     const fetchTransactions = async () => {
         try {
-            const { data } = await axios.get("http://localhost:3001/api/getTransaction", {
+            const { data } = await axios.get("https://roxiler-nqdi.onrender.com/api/getTransaction", {
                 params: { page, perPage, search }
             });
                 setTransactions(data.transactions);
