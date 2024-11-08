@@ -4,7 +4,12 @@ import {config} from "dotenv";
 import cors from "cors";
 const app = express();
 app.use(express.json());
-app.use(cors());
+const corsOptions = {
+    origin: ['https://roxiler.barat.tech', 'https://roxiler.pages.dev/', 'https://0745e2ed.roxiler.pages.dev/'],
+    methods: 'GET, POST, DELETE, PUT, PATCH',
+    allowedHeaders: 'Content-Type'
+};
+app.use(cors(corsOptions));
 config();
 
 import searchRoute from "./routes/searchRoute.js";

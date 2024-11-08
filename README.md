@@ -1,7 +1,6 @@
 # Roxiler
 
 live preview ->
-https://roxiler.pages.dev
 https://roxiler.barat.tech
 
 preview backend routes ->
