@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import {useState, useEffect, useLayoutEffect} from 'react';
 import axios from 'axios';
 import Pagination from "./Pagnition.jsx";
 import {useCallback} from "react";
-import MonthDropdown from "./MonthDropdown.jsx";
+import MonthDropdown, {months} from "./MonthDropdown.jsx";
+import Statistics from "./Statistics.jsx";
 
 const Transactions = () => {
     const [transactions, setTransactions] = useState([]);
@@ -11,10 +12,25 @@ const Transactions = () => {
     const [search, setSearch] = useState("");
     const [totalPages, setTotalPages] = useState(1);
     const [month, setMonth] = useState(3);
+    const [statistics, setStatistics] = useState([]);
 
     useEffect(() => {
         fetchTransactions();
     }, [page, search, perPage]);
+
+    useLayoutEffect(() => {
+        fetchMonthStatistics();
+    }, [month]);
+
+    const fetchMonthStatistics = async () => {
+        try{
+            const { data } = await axios.get(`http://localhost:3001/api/statistics/${month}`);
+            setStatistics(data.statistics);
+            console.log(data.statistics);
+        }catch (err){
+            console.log("Error while fetching Statistics" , err);
+        }
+    }
 
     const fetchTransactions = async () => {
         try {
@@ -53,7 +69,7 @@ const Transactions = () => {
                     value={search}
                     onChange={handleSearchChange}
                 />
-                <MonthDropdown currentMonth={month} handleSetMonth={handleSetMonth} />
+                <MonthDropdown currentMonth={month} handleSetMonth={handleSetMonth}/>
             </div>
             <ul>
                 <table>
@@ -73,16 +89,16 @@ const Transactions = () => {
                     </thead>
                     <tbody className="border border-neutral-500">
                     {transactions.map((transaction) => (
-                            <tr className="border border-neutral-500" key={transaction.id}>
-                                <td className="border-r border-neutral-500 p-1">{transaction.id}</td>
-                                <td className="border-r border-neutral-500 p-1">{transaction.title}</td>
-                                <td className="border-r border-neutral-500 p-1">{transaction.description}</td>
-                                <td className="border-r border-neutral-500 p-1">{transaction.category}</td>
-                                <td className="border-r border-neutral-500 p-1">{transaction.price}</td>
-                                <td className="border-r border-neutral-500 p-1">{transaction.price}</td>
-                                <td className="">{transaction.price}</td>
-                            </tr>
-                        ))}
+                        <tr className="border border-neutral-500" key={transaction.id}>
+                            <td className="border-r border-neutral-500 p-1">{transaction.id}</td>
+                            <td className="border-r border-neutral-500 p-1">{transaction.title}</td>
+                            <td className="border-r border-neutral-500 p-1">{transaction.description}</td>
+                            <td className="border-r border-neutral-500 p-1">{transaction.category}</td>
+                            <td className="border-r border-neutral-500 p-1">{transaction.price}</td>
+                            <td className="border-r border-neutral-500 p-1">{transaction.price}</td>
+                            <td className="">{transaction.price}</td>
+                        </tr>
+                    ))}
                     </tbody>
                 </table>
             </ul>
@@ -92,6 +108,11 @@ const Transactions = () => {
                 perPage={perPage}
                 onPageChange={handlePageChange}
             />
+            <div className="border-t border-neutral-500 m-4"></div>
+            <div className="flex flex-col items-center justify-between">
+                <h2 className="text-3xl font-bold font-mono">Statistics for {months[month]} month:</h2>
+                <Statistics statistics={statistics} month={month}/>
+            </div>
         </div>
     );
 }
